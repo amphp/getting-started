@@ -21,3 +21,6 @@ defaults:
      layout: "docs"
 
 asset_path: "/getting-started/.shared/asset"
+
+navigation:
+ - tcp-chat
