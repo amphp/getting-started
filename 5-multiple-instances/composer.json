@@ -1,0 +1,16 @@
+{
+    "name": "amphp/getting-started-echo-server",
+    "description": "A TCP echo server based on amphp/socket.",
+    "type": "project",
+    "require": {
+        "amphp/socket": "^0.10.1",
+        "amphp/redis": "^0.3.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Niklas Keller",
+            "email": "me@kelunik.com"
+        }
+    ]
+}
