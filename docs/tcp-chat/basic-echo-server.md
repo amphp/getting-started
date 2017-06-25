@@ -96,4 +96,6 @@ If you want to integrate ReactPHP libraries (as you can do by using our [`react-
 
 Remember that we could only handle a single client at a time before? Try connecting from multiple terminal windows now and you'll see that all connections are handled concurrently.
 
-In the [next section](./broadcasting) we'll send messages to all connected clients instead of just the sending client.
+In the next section we'll send messages to all connected clients instead of just the sending client.
+
+[Continue with the next section about broadcasting to all clients](broadcasting).

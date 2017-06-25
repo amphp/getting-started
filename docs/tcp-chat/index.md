@@ -39,4 +39,6 @@ Now open yet another terminal window and execute `nc localhost 1337` again, whil
 
 It's one of the first things you have to learn when writing asynchrnous / event-based programs: Any blocking operation will block everything, so try to keep blocking operations out of the event loop where possible. Either off-load these to another process (maybe using a queue) or replace them with non-blocking APIs where possible.
 
-In the [next part](./basic-echo-server) we're going to cover the exact same example, but built on top of Amp and its libraries.
+In the next part we're going to cover the exact same example, but built on top of Amp and its libraries.
+
+[Continue with the next section based on Amp](basic-echo-server).
