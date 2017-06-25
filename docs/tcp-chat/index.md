@@ -1,10 +1,13 @@
 ---
 title: Building a TCP Chat
-permalink: /tcp-chat
+permalink: /tcp-chat/
 ---
 In this tutorial we're going to create a simple TCP chat server based on Amp that allows many users to connect and exchange messages concurrently. We'll start by building a TCP server which uses blocking I/O like it's traditionally done in PHP and see the limitations of it.
 
 Get started by creating a new directory for our new project and create a simple `server.php` file with the following content:
+
+{:.note}
+> You can find the [code for this tutorial on GitHub](https://github.com/amphp/getting-started/tree/master/1-blocking-io).
 
 ```php
 <?php
