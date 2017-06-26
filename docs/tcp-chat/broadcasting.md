@@ -1,5 +1,5 @@
 ---
-title: Boardcasting Messages to Connected Clients
+title: Broadcasting Messages to Connected Clients
 permalink: /tcp-chat/broadcasting
 ---
 
@@ -8,7 +8,7 @@ permalink: /tcp-chat/broadcasting
 The first thing we need for that is something that keeps track of all active connections. As we need to share this state between all clients, we'll encapsulate that state into a class.
 
 {:.note}
-> You can find the [code for this tutorial on GitHub](https://github.com/amphp/getting-started/tree/master/3-boardcasting).
+> You can find the [code for this tutorial on GitHub](https://github.com/amphp/getting-started/tree/master/3-broadcasting).
 
 ```php
 <?php
