@@ -4,9 +4,10 @@ kramdown:
 
 baseurl: "/getting-started"
 layouts_dir: ".shared/layout"
+includes_dir: ".shared/includes"
 
 exclude: ["Gemfile", "Gemfile.lock", "README.md", "vendor"]
-include: [".shared"]
+safe: true
 
 repository: amphp/getting-started
 gems:
@@ -20,4 +21,4 @@ defaults:
    values:
      layout: "docs"
 
-asset_path: "/getting-started/.shared/asset"
+shared_asset_path: "/getting-started/asset"
