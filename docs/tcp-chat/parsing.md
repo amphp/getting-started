@@ -89,7 +89,7 @@ function handleMessage(ServerSocket $socket, string $message) {
 }
 ```
 
-We have three commands now: `time`, `up` and `down`. `time` reports the current server time to the client, while `up` and `down` change the test of the message to upper / lower case and return the result to the client.
+We have three commands now: `time`, `up` and `down`. `time` reports the current server time to the client, while `up` and `down` change the rest of the message to upper / lower case and return the result to the client.
 
 As you can see, adding commands is pretty easy now. Let's add another one to allow the client to exit (you can do that via `Ctrl + C` in `nc` anyway).
 
