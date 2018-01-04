@@ -37,7 +37,7 @@ Let's open another terminal window and connect to the server using netcat: `nc l
 
 Now open yet another terminal window and execute `nc localhost 1337` again, while keeping the other command running. If you submit some text there, there won't be an answer. That's because once the server accepts a client, it only reads from that single client as long as it's alive. Only when that client dies, a new client will be accepted by the server. Just it `Ctrl + C` in the first window, you'll see that it now responded in the second window as the second client got accepted and its message was read and echoed.
 
-It's one of the first things you have to learn when writing asynchrnous / event-based programs: Any blocking operation will block everything, so try to keep blocking operations out of the event loop where possible. Either off-load these to another process (maybe using a queue) or replace them with non-blocking APIs where possible.
+It's one of the first things you have to learn when writing asynchronous / event-based programs: Any blocking operation will block everything, so try to keep blocking operations out of the event loop where possible. Either off-load these to another process (maybe using a queue) or replace them with non-blocking APIs where possible.
 
 In the next part we're going to cover the exact same example, but built on top of Amp and its libraries.
 
