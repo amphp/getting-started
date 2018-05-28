@@ -39,4 +39,4 @@ We will replace our current `$this->broadcast()` calls with `$redisClient->publi
 
 You can find the [complete code in the GitHub repository](https://github.com/amphp/getting-started/tree/master/5-multiple-instances).
 
-This is the end of our TCP chat server series. Feel free to refactor and extend the code. We'd be glad to hear which cool features you added! If you're looking for real-world use cases not using raw TCP, you might want to have a look at [Aerys](https://github.com/amphp/aerys), our HTTP server with WebSocket support.
+This is the end of our TCP chat server series. Feel free to refactor and extend the code. We'd be glad to hear which cool features you added! If you're looking for real-world use cases not using raw TCP, you might want to have a look at [http-server](https://github.com/amphp/http-server), our HTTP server with WebSocket support.
