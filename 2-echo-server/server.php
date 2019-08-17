@@ -5,7 +5,7 @@ require __DIR__ . "/vendor/autoload.php";
 // Non-blocking server implementation based on amphp/socket.
 
 use Amp\Loop;
-use Amp\Socket\ServerSocket;
+use Amp\Socket\Socket;
 use function Amp\asyncCall;
 
 // Amp\Loop::run() runs the event loop and executes the passed callback right after starting
@@ -13,7 +13,7 @@ Loop::run(function () {
     $uri = "tcp://127.0.0.1:1337";
 
     // $clientHandler will be executed for each client that connects
-    $clientHandler = function (ServerSocket $socket) {
+    $clientHandler = function (Socket $socket) {
         // ServerSocket::read() returns a promise that resolves to a string if new data is available or `null` if the
         // socket has been closed.
         while (null !== $chunk = yield $socket->read()) {
@@ -23,8 +23,8 @@ Loop::run(function () {
         }
     };
 
-    // Amp\Socket\listen() is a small wrapper around stream_socket_server() returning a Server object
-    $server = Amp\Socket\listen($uri);
+    // listen() is a small wrapper around stream_socket_server() returning a Server object
+    $server = Amp\Socket\Server::listen($uri);
 
     // Like in the previous example, we accept each client as soon as we can
     // Server::accept() returns a promise. The coroutine will be interrupted and continued once the promise resolves.

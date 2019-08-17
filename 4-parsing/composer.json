@@ -3,7 +3,7 @@
     "description": "A TCP echo server based on amphp/socket.",
     "type": "project",
     "require": {
-        "amphp/socket": "^0.10.1"
+        "amphp/socket": "^1"
     },
     "license": "MIT",
     "authors": [

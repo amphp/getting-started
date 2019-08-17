@@ -19,19 +19,19 @@ require __DIR__ . "/vendor/autoload.php";
 // Non-blocking server implementation based on amphp/socket.
 
 use Amp\Loop;
-use Amp\Socket\ServerSocket;
+use Amp\Socket\Socket;
 use function Amp\asyncCall;
 
 Loop::run(function () {
     $uri = "tcp://127.0.0.1:1337";
 
-    $clientHandler = function (ServerSocket $socket) {
+    $clientHandler = function (Socket $socket) {
         while (null !== $chunk = yield $socket->read()) {
             yield $socket->write($chunk);
         }
     };
 
-    $server = Amp\Socket\listen($uri);
+    $server = Amp\Socket\Server::listen($uri);
 
     while ($socket = yield $server->accept()) {
         asyncCall($clientHandler, $socket);
@@ -41,13 +41,13 @@ Loop::run(function () {
 
 All we do here is accepting the clients and echoing their input back as before, but it happens concurrently now. While just a few lines of code, there are a lot of new concepts in there.
 
-What happens there? `Amp\Loop::run()` runs the event loop and executes the passed callback right after starting. `Amp\Socket\listen()` is a small wrapper around `stream_socket_server()` creating a server socket and returning it as `Server` object. Like in the previous example, we accept each client as soon as we can.
+What happens there? `Amp\Loop::run()` runs the event loop and executes the passed callback right after starting. `Amp\Socket\Server::listen()` is a small wrapper around `stream_socket_server()` creating a server socket and returning it as `Server` object. Like in the previous example, we accept each client as soon as we can.
 
 Fine so far, now to the probably new concepts, which will be explained in the following sections. `Server::accept()` returns a promise. `yield` will interrupt the coroutine and continue once the promise resolves. It then asynchronously calls `$clientHandler` for each accepted client. `$clientHandler` reads from the socket and directly writes the read contents to the socket again.
 
 ## What is the Event Loop?
 
-Good question! The event loop is the main scheduler of every asynchronous program. In it's simplest form, it's a while loop calling `stream_select`. The following pseudo-code might help you to understand what's going on.
+Good question! The event loop is the main scheduler of every asynchronous program. In it's simplest form, it's a while loop calling [`stream_select()`](https://www.php.net/stream_select). The following pseudo-code might help you to understand what's going on.
 
 ```php
 <?php

@@ -5,7 +5,7 @@ require __DIR__ . "/vendor/autoload.php";
 // Non-blocking server implementation based on amphp/socket keeping track of connections.
 
 use Amp\Loop;
-use Amp\Socket\ServerSocket;
+use Amp\Socket\Socket;
 use function Amp\asyncCall;
 
 Loop::run(function () {
@@ -20,7 +20,7 @@ Loop::run(function () {
 
         public function listen() {
             asyncCall(function () {
-                $server = Amp\Socket\listen($this->uri);
+                $server = Amp\Socket\Server::listen($this->uri);
 
                 print "Listening on " . $server->getAddress() . " ..." . PHP_EOL;
 
@@ -30,7 +30,7 @@ Loop::run(function () {
             });
         }
 
-        private function handleClient(ServerSocket $socket) {
+        private function handleClient(Socket $socket) {
             asyncCall(function () use ($socket) {
                 $remoteAddr = $socket->getRemoteAddress();
 
@@ -39,7 +39,7 @@ Loop::run(function () {
                 $this->broadcast($remoteAddr . " joined the chat." . PHP_EOL);
 
                 // We only insert the client afterwards, so it doesn't get its own join message
-                $this->clients[$remoteAddr] = $socket;
+                $this->clients[(string) $remoteAddr] = $socket;
 
                 $buffer = "";
 
@@ -55,15 +55,15 @@ Loop::run(function () {
                 // We remove the client again once it disconnected.
                 // It's important, otherwise we'll leak memory.
                 // We also have to unset our new usernames.
-                unset($this->clients[$remoteAddr], $this->usernames[$remoteAddr]);
+                unset($this->clients[(string) $remoteAddr], $this->usernames[(string) $remoteAddr]);
 
                 // Inform other clients that that client disconnected and also print it in the server.
                 print "Client disconnected: {$remoteAddr}" . PHP_EOL;
-                $this->broadcast(($this->usernames[$remoteAddr] ?? $remoteAddr) . " left the chat." . PHP_EOL);
+                $this->broadcast(($this->usernames[(string) $remoteAddr] ?? $remoteAddr) . " left the chat." . PHP_EOL);
             });
         }
 
-        private function handleMessage(ServerSocket $socket, string $message) {
+        private function handleMessage(Socket $socket, string $message) {
             if ($message === "") {
                 // ignore all empty messages
                 return;
@@ -103,8 +103,8 @@ Loop::run(function () {
                         }
 
                         $remoteAddr = $socket->getRemoteAddress();
-                        $oldnick = $this->usernames[$remoteAddr] ?? $remoteAddr;
-                        $this->usernames[$remoteAddr] = $nick;
+                        $oldnick = $this->usernames[(string) $remoteAddr] ?? $remoteAddr;
+                        $this->usernames[(string) $remoteAddr] = $nick;
 
                         $this->broadcast($oldnick . " is now " . $nick . PHP_EOL);
                         break;
@@ -118,7 +118,7 @@ Loop::run(function () {
             }
 
             $remoteAddr = $socket->getRemoteAddress();
-            $user = $this->usernames[$remoteAddr] ?? $remoteAddr;
+            $user = $this->usernames[(string) $remoteAddr] ?? $remoteAddr;
             $this->broadcast($user . " says: " . $message . PHP_EOL);
         }
 

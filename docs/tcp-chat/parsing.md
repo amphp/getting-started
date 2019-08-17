@@ -134,7 +134,7 @@ $this->broadcast($user . " says: " . $message . PHP_EOL);
 
 ## Adding Authentication
 
-Adding authentication is a task left to you, we'll just give some hints. You could for example create a `register` command that accepts a name and password and save that somewhere using `password_hash`. You could then extend `nick` with the same mechanism and require the right password using `password_verify` other otherwise disallow changing to that name.
+Adding authentication is a task left to you, we'll just give some hints. You could for example create a `register` command that accepts a name and password and save that somewhere using `password_hash`. You could then extend `nick` with the same mechanism and require the right password using `password_verify` otherwise disallow changing to that name.
 
 In the next step we will use [Redis](https://redis.io/) for Pub/Sub to broadcast messages over multiple instances.
 

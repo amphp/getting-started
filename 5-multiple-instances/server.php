@@ -9,7 +9,7 @@ use Amp\Delayed;
 use Amp\Redis\Client;
 use Amp\Redis\SubscribeClient;
 use Amp\Redis\RedisException;
-use Amp\Socket\ServerSocket;
+use Amp\Socket\Socket;
 use function Amp\asyncCall;
 
 Loop::run(function () {
@@ -28,7 +28,7 @@ Loop::run(function () {
             asyncCall(function () {
                 $this->redisClient = new Client("tcp://localhost:6379");
 
-                $server = Amp\Socket\listen($this->uri);
+                $server = Amp\Socket\Server::listen($this->uri);
                 $this->listenToRedis();
 
                 print "Listening on " . $server->getAddress() . " ..." . PHP_EOL;
@@ -48,7 +48,7 @@ Loop::run(function () {
                 yield $this->redisClient->publish("chat", $remoteAddr . " joined the chat." . PHP_EOL);
 
                 // We only insert the client afterwards, so it doesn't get its own join message
-                $this->clients[$remoteAddr] = $socket;
+                $this->clients[(string) $remoteAddr] = $socket;
 
                 $buffer = "";
 
@@ -64,16 +64,16 @@ Loop::run(function () {
                 // We remove the client again once it disconnected.
                 // It's important, otherwise we'll leak memory.
                 // We also have to unset our new usernames.
-                unset($this->clients[$remoteAddr], $this->usernames[$remoteAddr]);
+                unset($this->clients[(string) $remoteAddr], $this->usernames[(string) $remoteAddr]);
 
                 // Inform other clients that that client disconnected and also print it in the server.
                 print "Client disconnected: {$remoteAddr}" . PHP_EOL;
-                $message = ($this->usernames[$remoteAddr] ?? $remoteAddr) . " left the chat." . PHP_EOL;
+                $message = ($this->usernames[(string) $remoteAddr] ?? $remoteAddr) . " left the chat." . PHP_EOL;
                 yield $this->redisClient->publish("chat", $message);
             });
         }
 
-        private function handleMessage(ServerSocket $socket, string $message) {
+        private function handleMessage(Socket $socket, string $message) {
             if ($message === "") {
                 // ignore all empty messages
                 return;
