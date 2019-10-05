@@ -4,7 +4,7 @@
     "type": "project",
     "require": {
         "amphp/socket": "^1",
-        "amphp/redis": "^0.3.0"
+        "amphp/redis": "^1"
     },
     "license": "MIT",
     "authors": [
