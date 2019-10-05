@@ -6,9 +6,12 @@ require __DIR__ . "/vendor/autoload.php";
 
 use Amp\Loop;
 use Amp\Delayed;
-use Amp\Redis\Client;
-use Amp\Redis\SubscribeClient;
+use Amp\Redis\Config;
+use Amp\Redis\Redis;
+use Amp\Redis\RemoteExecutor;
+use Amp\Redis\Subscriber;
 use Amp\Redis\RedisException;
+use Amp\Redis\Subscription;
 use Amp\Socket\Socket;
 use function Amp\asyncCall;
 
@@ -16,17 +19,21 @@ Loop::run(function () {
     $server = new class {
         private $uri = "tcp://127.0.0.1:0";
 
+        private $redisHost = "tcp://localhost:6379";
+
         // We use a property to store a map of $clientAddr => $client
         private $clients = [];
 
         // Store a $clientAddr => $username map
         private $usernames = [];
 
+        /** @var Redis */
         private $redisClient;
 
         public function listen() {
             asyncCall(function () {
-                $this->redisClient = new Client("tcp://localhost:6379");
+                $remoteExecutor = new RemoteExecutor(Config::fromUri($this->redisHost));
+                $this->redisClient = new Redis($remoteExecutor);
 
                 $server = Amp\Socket\Server::listen($this->uri);
                 $this->listenToRedis();
@@ -39,7 +46,7 @@ Loop::run(function () {
             });
         }
 
-        private function handleClient(ServerSocket $socket) {
+        private function handleClient(Socket $socket) {
             asyncCall(function () use ($socket) {
                 $remoteAddr = $socket->getRemoteAddress();
 
@@ -113,8 +120,8 @@ Loop::run(function () {
                         }
 
                         $remoteAddr = $socket->getRemoteAddress();
-                        $oldnick = $this->usernames[$remoteAddr] ?? $remoteAddr;
-                        $this->usernames[$remoteAddr] = $nick;
+                        $oldnick = $this->usernames[(string) $remoteAddr] ?? $remoteAddr;
+                        $this->usernames[(string) $remoteAddr] = $nick;
 
                         $this->redisClient->publish("chat", $oldnick . " is now " . $nick . PHP_EOL);
                         break;
@@ -128,7 +135,7 @@ Loop::run(function () {
             }
 
             $remoteAddr = $socket->getRemoteAddress();
-            $user = $this->usernames[$remoteAddr] ?? $remoteAddr;
+            $user = $this->usernames[(string) $remoteAddr] ?? $remoteAddr;
             $this->redisClient->publish("chat", $user . " says: " . $message . PHP_EOL);
         }
 
@@ -142,10 +149,11 @@ Loop::run(function () {
 
         private function listenToRedis() {
             asyncCall(function () {
-                $redisClient = new SubscribeClient("tcp://localhost:6379");
+                $redisClient = new Subscriber(Config::fromUri($this->redisHost));
 
                 do {
                     try {
+                        /** @var Subscription $subscription */
                         $subscription = yield $redisClient->subscribe("chat");
 
                         while (yield $subscription->advance()) {
